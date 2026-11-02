@@ -172,9 +172,9 @@
   <div id="loginModal" class="modal-overlay">
     <div class="glass-card modal-content" style="text-align: center;">
       <div style="margin-bottom: 20px;">
-        <div id="brandLogoContainer" style="margin-bottom: 8px; display: flex; justify-content: center; align-items: center; min-height: 60px;">
-          <img src="" alt="Easy Go Logo" id="appLogoDisplay" style="max-height: 65px; width: auto; object-fit: contain; display: none;">
-          <h1 id="fallbackLogoText" style="color: #dc2626; font-size: 28px; font-weight: 900; font-style: italic; display: none;">Easy Go</h1>
+        <div style="margin-bottom: 8px; display: flex; justify-content: center; align-items: center; min-height: 60px;">
+          <!-- Direct Logo Image Integrated -->
+          <img src="1000217737.png" alt="Easy Go Logo" style="max-height: 65px; width: auto; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.imgur.com/7gXvJ1s.png';">
         </div>
       </div>
 
@@ -198,9 +198,8 @@
   <!-- HEADER BAR -->
   <header class="header-bar">
     <div style="display: flex; align-items: center;">
-      <div id="headerLogoBox" style="display: flex; align-items: center;">
-        <img src="" alt="Logo" id="headerLogoImg" style="max-height: 55px; width: auto; object-fit: contain; display: none;">
-        <h2 id="headerLogoText" style="color: #dc2626; font-size: 18px; font-weight: 900; font-style: italic; display: none;">Easy Go</h2>
+      <div style="display: flex; align-items: center;">
+        <img src="1000217737.png" alt="Easy Go Logo" style="max-height: 45px; width: auto; object-fit: contain;" onerror="this.onerror=null; this.src='https://i.imgur.com/7gXvJ1s.png';">
       </div>
     </div>
     <div style="display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.9); padding: 4px 10px; border-radius: 12px; border: 1px solid #fca5a5;">
@@ -545,13 +544,6 @@
         <h2 style="font-weight: bold; color: #0f172a; margin-bottom: 4px;"><i class="fa-solid fa-users-gear" style="color: #dc2626;"></i> Account Management (Shop, Rider, Staff)</h2>
         <p style="font-size: 11px; color: #64748b; margin-bottom: 14px;">Create, edit and manage system user accounts with full profile details.</p>
 
-        <!-- APP LOGO SETTING -->
-        <div style="background: rgba(254, 242, 242, 0.7); padding: 14px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #fca5a5;">
-          <h3 style="font-size: 12px; font-weight: bold; color: #dc2626; margin-bottom: 8px;"><i class="fa-solid fa-image"></i> App Logo Upload (လိုဂိုထည့်ရန်)</h3>
-          <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Upload your Easy Go logo image file to display across the app.</p>
-          <input type="file" id="appLogoFile" accept="image/*" class="glass-input" onchange="handleAppLogoUpload(event)" style="padding: 6px;">
-        </div>
-
         <!-- ACCOUNT CREATION FORM -->
         <form onsubmit="handleCreateAccount(event)" style="background: rgba(255,255,255,0.7); padding: 14px; border-radius: 12px; margin-bottom: 16px;">
           <h3 style="font-size: 12px; font-weight: bold; color: #dc2626; margin-bottom: 10px;">+ Add New Account</h3>
@@ -798,7 +790,6 @@
 
     let dbAccounts = [];
     let dbWays = [];
-    let customAppLogo = localStorage.getItem('easygo_custom_logo') || '';
     let currentUser = null;
     let currentPipelineFilter = 'ALL';
 
@@ -874,7 +865,6 @@
       document.getElementById('loginUsername').value = '';
       document.getElementById('loginPassword').value = '';
       document.getElementById('loginModal').classList.remove('hidden');
-      renderAppLogo();
     }
 
     function applyRolePermissions() {
@@ -943,44 +933,9 @@
     }
 
     function renderAll() {
-      renderAppLogo();
       populateDropdowns();
       renderDashboard();
       if (currentUser && currentUser.role === 'Admin') renderSettingsAccountsTable();
-    }
-
-    function renderAppLogo() {
-      const logoImg = document.getElementById('appLogoDisplay');
-      const fallbackText = document.getElementById('fallbackLogoText');
-      const headerLogoImg = document.getElementById('headerLogoImg');
-      const headerLogoText = document.getElementById('headerLogoText');
-
-      if (customAppLogo) {
-        if (logoImg) { logoImg.src = customAppLogo; logoImg.style.display = 'block'; }
-        if (fallbackText) fallbackText.style.display = 'none';
-
-        if (headerLogoImg) { headerLogoImg.src = customAppLogo; headerLogoImg.style.display = 'block'; }
-        if (headerLogoText) headerLogoText.style.display = 'none';
-      } else {
-        if (logoImg) logoImg.style.display = 'none';
-        if (fallbackText) fallbackText.style.display = 'block';
-
-        if (headerLogoImg) headerLogoImg.style.display = 'none';
-        if (headerLogoText) headerLogoText.style.display = 'block';
-      }
-    }
-
-    function handleAppLogoUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        customAppLogo = ev.target.result;
-        localStorage.setItem('easygo_custom_logo', customAppLogo);
-        renderAppLogo();
-        showToast('App logo updated successfully!');
-      };
-      reader.readAsDataURL(file);
     }
 
     function populateDropdowns() {
