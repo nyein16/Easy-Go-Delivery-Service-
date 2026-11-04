@@ -1346,7 +1346,7 @@
               <button onclick="openWayInfoModal('${w.id}')" class="glass-btn" style="padding: 5px 8px; font-size: 10px; color:#2563eb;"><i class="fa-solid fa-circle-info"></i> Info</button>
               <button onclick="openAdminUpdateModal('${w.id}')" class="glass-btn" style="padding: 5px 8px; font-size: 10px; color:#dc2626; margin-left:2px;"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
               <button onclick="deleteWayDirect('${w.id}')" class="btn-danger" style="padding: 6px 8px; font-size: 10px; margin-left:2px;"><i class="fa-solid fa-trash"></i> Delete</button>
-            </td>` : ``}
+            ` : ``}
         </tr>
       `).join('') || `<tr><td colspan="${isPrivileged ? 9 : 8}" style="text-align:center; padding:15px; color:#94a3b8;">No records found.</td></tr>`;
     }
@@ -1716,27 +1716,34 @@
       const index = document.getElementById('editAccIndex').value;
       const a = dbAccounts[index];
       if (a) {
-        a.pass = document.getElementById('modalEditPassword').value.trim();
-        a.phone = document.getElementById('modalEditPhone').value.trim();
-        a.address = document.getElementById('modalEditAddress').value.trim();
+        const newPass = document.getElementById('modalEditPassword').value.trim();
+        const newPhone = document.getElementById('modalEditPhone').value.trim();
+        const newAddress = document.getElementById('modalEditAddress').value.trim();
+        let newNrc = a.nrc;
         if (a.role === 'Rider') {
-          a.nrc = document.getElementById('modalEditNrc').value.trim();
+          newNrc = document.getElementById('modalEditNrc').value.trim();
         }
 
-        dbAccounts[index] = a;
+        const updatedAcc = {
+          username: a.username,
+          role: a.role,
+          pass: newPass,
+          phone: newPhone,
+          address: newAddress,
+          nrc: newNrc,
+          profilePhoto: a.profilePhoto || '',
+          nrcPhoto: a.nrcPhoto || ''
+        };
 
-        const { error } = await supabaseClient.from('accounts').update({
-          pass: a.pass,
-          phone: a.phone,
-          address: a.address,
-          nrc: a.nrc
-        }).eq('username', a.username);
+        const { error } = await supabaseClient.from('accounts').upsert([updatedAcc], { onConflict: 'username' });
 
         if (error) {
           console.error('Account update error:', error);
           showToast('Failed to update account in cloud!');
           return;
         }
+
+        dbAccounts[index] = updatedAcc;
 
         showToast('Account updated successfully!');
         closeEditAccountModal();
