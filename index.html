@@ -816,7 +816,7 @@
     }
 
     async function saveAccountsToSupabase() {
-      await supabaseClient.from('accounts').upsert(dbAccounts);
+      await supabaseClient.from('accounts').upsert(dbAccounts, { onConflict: 'username' });
     }
 
     async function saveWaysToSupabase() {
@@ -832,7 +832,12 @@
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Checking...`;
 
-      setTimeout(() => {
+      // ဝင်ရောက်ရာတွင် Cloud (Supabase) ရှိ နောက်ဆုံးဒေတာများကို အမြဲတမ်း အရင်ဆွဲထုတ်ပြီး စစ်ဆေးရန်
+      supabaseClient.from('accounts').select('*').then(({ data }) => {
+        if (data && data.length > 0) {
+          dbAccounts = data;
+        }
+
         const found = dbAccounts.find(acc => acc.username.toLowerCase() === u.toLowerCase() && acc.pass === p);
         if (found) {
           currentUser = found;
@@ -857,14 +862,14 @@
           btn.disabled = false;
           btn.innerHTML = 'Sign In';
         }
-      }, 700);
+      });
     }
 
     function logout() {
       currentUser = null;
       document.getElementById('loginUsername').value = '';
       document.getElementById('loginPassword').value = '';
-      loadDataFromSupabase(); // Reload fresh data from database on logout
+      loadDataFromSupabase();
       document.getElementById('loginModal').classList.remove('hidden');
     }
 
@@ -1594,7 +1599,7 @@
 
     function openPhotoModal(url) {
       document.getElementById('photoModalBody').innerHTML = `<img src="${url}" style="max-width:100%; border-radius:12px;">`;
-      document.getElementById('photoModal').classList.add('hidden');
+      document.getElementById('photoModal').classList.remove('hidden');
     }
     function closePhotoModal() { document.getElementById('photoModal').classList.add('hidden'); }
 
@@ -1718,9 +1723,15 @@
         if (a.role === 'Rider') {
           a.nrc = document.getElementById('modalEditNrc').value.trim();
         }
-        
-        // Supabase ထဲမှာ ချက်ချင်း သေချာ update ဖြစ်စေရန် upsert ကို ခေါ်ခြင်း
-        const { error } = await supabaseClient.from('accounts').upsert([a]);
+
+        // Supabase ဘက်သို့ username ကို အခြေခံ၍ တိုက်ရိုက် Update ပို့ခြင်း
+        const { error } = await supabaseClient.from('accounts').update({
+          pass: a.pass,
+          phone: a.phone,
+          address: a.address,
+          nrc: a.nrc
+        }).eq('username', a.username);
+
         if (error) {
           console.error('Account update error:', error);
           showToast('Failed to update account in cloud!');
@@ -1758,7 +1769,7 @@
         margin:       10,
         filename:     'EasyGo_Report.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       html2pdf().from(element).set(opt).save();
