@@ -802,7 +802,7 @@
           dbAccounts = [
             { username: 'Nyeinkhantkyaw', role: 'Admin', pass: 'admin123', phone: '09779964344', address: 'Yangon', profilePhoto: '', nrc: '', nrcPhoto: '' }
           ];
-          await supabaseClient.from('accounts').upsert(dbAccounts);
+          await supabaseClient.from('accounts').upsert(dbAccounts, { onConflict: 'username' });
         }
 
         const { data: wayData, error: wayErr } = await supabaseClient.from('ways').select('*');
@@ -1722,6 +1722,8 @@
         if (a.role === 'Rider') {
           a.nrc = document.getElementById('modalEditNrc').value.trim();
         }
+
+        dbAccounts[index] = a;
 
         const { error } = await supabaseClient.from('accounts').update({
           pass: a.pass,
