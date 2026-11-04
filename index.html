@@ -832,7 +832,6 @@
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Checking...`;
 
-      // ဝင်ရောက်ရာတွင် Cloud (Supabase) ရှိ နောက်ဆုံးဒေတာများကို အမြဲတမ်း အရင်ဆွဲထုတ်ပြီး စစ်ဆေးရန်
       supabaseClient.from('accounts').select('*').then(({ data }) => {
         if (data && data.length > 0) {
           dbAccounts = data;
@@ -1724,7 +1723,6 @@
           a.nrc = document.getElementById('modalEditNrc').value.trim();
         }
 
-        // Supabase ဘက်သို့ username ကို အခြေခံ၍ တိုက်ရိုက် Update ပို့ခြင်း
         const { error } = await supabaseClient.from('accounts').update({
           pass: a.pass,
           phone: a.phone,
@@ -1772,7 +1770,21 @@
         html2canvas:  { scale: 2, useCORS: true, logging: false },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
-      html2pdf().from(element).set(opt).save();
+      
+      html2pdf().from(element).set(opt).outputPdf('blob').then((pdfBlob) => {
+        const blobUrl = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = 'EasyGo_Report.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+        showToast('PDF Download အောင်မြင်ပါသည်။');
+      }).catch(err => {
+        console.error('PDF Export Error:', err);
+        showToast('PDF ထုတ်ယူရာတွင် အမှားအယွင်းရှိပါသည်။');
+      });
     }
 
     loadDataFromSupabase();
