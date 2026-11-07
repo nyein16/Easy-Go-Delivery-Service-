@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --easy-red: #D20D1B;
+  --go-yellow: #FFB900;
+  --bg-color: #F5F6F8;
+  --text-main: #333333;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+}
