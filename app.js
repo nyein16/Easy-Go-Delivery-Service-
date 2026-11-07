@@ -96,7 +96,7 @@ async function enter(){
 async function shell(){
  const items = navFor(profile);
  app.innerHTML = `<div class="layout"><aside class="side" id="side"><img class="logo" src="logo.png" alt="EASY GO"><nav class="nav">${items.map(k=>`<a href="#/${k}" data-k="${k}"><span>${ICON[k]}</span>${t('n_'+k)}<span class="badge" id="b-${k}" hidden></span></a>`).join('')}</nav></aside>
-  <div class="main"><header class="top"><button id="menu">☰</button><div class="grow" id="title"></div><span class="pill">${esc(profile.role)}</span><button id="lang">${lang==='en'?'မြန်မာ':'EN'}</button><button id="out">${t('logout')}</button></div></header><main id="view"></main></div></div>`;
+  <div class="main"><header class="top"><button id="menu">☰</button><div class="grow" id="title"></div><span class="pill">${esc(profile.role)}</span><button id="lang">${lang==='en'?'မြန်မာ':'EN'}</button><button id="out">${t('logout')}</button></header><main id="view"></main></div></div>`;
  $('#menu').onclick = () => $('#side').classList.toggle('open');
  $('#side').onclick = e => { if (e.target.closest('a') || e.target.id === 'side') $('#side').classList.remove('open'); };
  $('#lang').onclick = setLang;

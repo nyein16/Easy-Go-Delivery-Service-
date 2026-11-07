@@ -47,3 +47,5 @@ select,textarea{width:100%;padding:12px;border:1px solid #d5d7db;border-radius:1
 .st-complete,.st-active{background:#e3f6e8;color:#13693a}.st-return,.st-suspended{background:#fdecee;color:#8a0a14}.st-cancelled,.st-inactive{background:#eee;color:#555}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px;z-index:40}
 .modal .card{margin-top:20px}
+
+.top{flex-wrap:nowrap}.top button{white-space:nowrap}.top .grow{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.top .pill{white-space:nowrap}
