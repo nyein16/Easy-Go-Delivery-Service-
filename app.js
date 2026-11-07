@@ -134,10 +134,11 @@ function account(v){
  $('#pw').onclick = async () => { const p = $('#np').value; if (p.length < 8) return toast(t('pwShort')); const {error} = await sb.auth.updateUser({password:p}); toast(error ? error.message : t('saved')); };
 }
 const PAGES = { notifications: notifs, account };
+window.EG = { sb, t, esc, $, toast, PAGES, I18N, route, get profile(){ return profile; } };
 
 // ---------- start ----------
 sb.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY') setTimeout(recoveryScreen, 0); });
 async function start(){ const {data:{session}} = await sb.auth.getSession(); if (!session) return authScreen('login'); enter(); }
-start();
+window.addEventListener('load', start);
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
